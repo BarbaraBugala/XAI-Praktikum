@@ -52,7 +52,9 @@ The notebook provides:
 - attribution heatmaps for each noise level,
 - a qualitative analysis of how explanations change as the image becomes increasingly noisy.
 
-Although the focus is on Shapiq Vision, the experiment also illustrates how the underlying **ResNet-18** model behaves under severe image corruption and how attribution methods can help identify where the model begins to fail.
+![Noise](data/noise.png)
+
+Although the focus is on Shapiq Vision, the experiment also illustrates how the underlying **ResNet-18** model behaves under severe image corruption and how attribution methods can help identify where the model begins to fail. From this analysis, we can see that ResNet-18 struggles with high levels of noise, which is also supported by previous works such as [*"The Role of Noisy Data in Improving CNN Robustness for Image Classification"*](https://arxiv.org/abs/2601.08043) and [*"Effects of Degradations on Deep Neural Network Architectures"*](https://arxiv.org/html/1807.10108v6).
 
 ---
 
@@ -90,6 +92,8 @@ Loads the stored benchmark results and produces:
 - summary tables,
 
 with all figures shown separately for ResNet-18 and ViT-B/16.
+
+![AID](data/aid.png)
 
 ---
 
