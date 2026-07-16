@@ -24,7 +24,7 @@ The comparison is organized into three notebooks that progressively move from a 
 
 This notebook serves as the main introduction to the repository. It compares all three attribution methods on a single image using a ResNet-18 classifier.
 
-![Guitardog](data/guitardog.png "Guitar dog image")
+![Guitardog](data/guitardog.png)
 
 The chosen image is an interesting stress test because it contains two valid semantic concepts-a **golden retriever** and a **guitar**. We explain two different model predictions: the top-1 prediction and the model's fifth-ranked class.
 
@@ -36,6 +36,8 @@ The notebook includes:
 - side-by-side superpixel attribution heatmaps,
 - bar plots showing the ten most important superpixels for each method,
 - a comparison of runtime and model-call budgets.
+
+![Explanations](data/shap_comparison.png)
 
 ---
 
