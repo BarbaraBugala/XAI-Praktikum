@@ -111,7 +111,7 @@ with all figures shown separately for ResNet-18 and ViT-B/16.
 
 ### `masking_faithfulness_benchmark.ipynb`
 
-The other notebooks ask *which attribution method* is best. This one asks a different question: **which masking strategy** — that is, which definition of "this region is removed" — produces the most faithful explanation.
+The other notebooks ask *which attribution method* is best. This one asks a different question: **which masking strategy** - that is, which definition of "this region is removed" - produces the most faithful explanation.
 
 Every explanation needs a removal rule, and `shapiq.vision` offers several. The notebook benchmarks six of them (`MeanColorMasking`, `ZeroMasking`, `DatasetMeanMasking`, `BlurMasking`, `MarginalSampling`, `InpaintingMasking`) plus ViT's token-space removal, over **1000 ImageNet images per run**, scoring each with insertion/deletion ABC. A random attribution order is included as a floor and lands at 0.00 ± 0.01, confirming the metric measures what it claims to.
 
@@ -123,11 +123,11 @@ It runs three configurations:
 | `vit` | ViT-B/16 | 25 SLIC superpixels |
 | `vit_grid49` | ViT-B/16 | 49 uniform tiles |
 
-The third run exists to make one comparison honest. Token masking **cannot** use superpixels — `PatchStrategy` has to tile ViT's 14×14 token grid — so comparing it against superpixel-based strategies confounds the *removal rule* with the *partition*. Because `GridStrategy(grid_shape=7)` is geometrically identical to `PatchStrategy(grid_size=14, n_players=49)`, the `vit_grid49` run holds the partition fixed and lets the removal rule vary alone.
+The third run exists to make one comparison honest. Token masking **cannot** use superpixels - `PatchStrategy` has to tile ViT's 14×14 token grid - so comparing it against superpixel-based strategies confounds the *removal rule* with the *partition*. Because `GridStrategy(grid_shape=7)` is geometrically identical to `PatchStrategy(grid_size=14, n_players=49)`, the `vit_grid49` run holds the partition fixed and lets the removal rule vary alone.
 
 ![Masking faithfulness](data/plot_curves_vit_grid49.png)
 
-The headline result is that this distinction matters. Token masking appears to trail the best pixel strategy by **−0.163 ABC**, but a paired decomposition attributes **−0.100 to the partition** and only **−0.063 to the removal rule**: on an equal footing, token masking is mid-pack rather than last. Elsewhere, the cheap constant fills (`DatasetMeanMasking`, `MeanColorMasking`) top every run, while the expensive strategies do not pay for themselves — and `MarginalSampling` is strikingly partition-sensitive, competitive on superpixels but worst on a uniform grid.
+The headline result is that this distinction matters. Token masking appears to trail the best pixel strategy by **-0.163 ABC**, but a paired decomposition attributes **-0.100 to the partition** and only **-0.063 to the removal rule**: on an equal footing, token masking is mid-pack rather than last. Elsewhere, the cheap constant fills (`DatasetMeanMasking`, `MeanColorMasking`) top every run, while the expensive strategies do not pay for themselves - and `MarginalSampling` is strikingly partition-sensitive, competitive on superpixels but worst on a uniform grid.
 
 The notebook is self-contained, checkpoints every 25 images, and resumes automatically (`RESUME = True`); `PILOT = True` runs a small subset for a quick check. A full run takes roughly five hours on a GPU. Results are stored in `data/faithfulness_results.json` and `data/faithfulness_results.npz`, so every figure can be rebuilt without recomputing.
 
