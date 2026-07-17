@@ -138,7 +138,7 @@ The notebook is self-contained, checkpoints every 25 images, and resumes automat
 Install the required packages with:
 
 ```bash
-pip install "git+https://github.com/S2k-1/shapiq.git@feature/pr_final" captum scikit-image --quiet
+pip install "git+https://github.com/S2k-1/shapiq.git@feature/pr_final" captum scikit-image xgboost --quiet
 ```
 
 ---
