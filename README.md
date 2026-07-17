@@ -107,8 +107,7 @@ with all figures shown separately for ResNet-18 and ViT-B/16.
 
 ![AID](data/aid.png)
 > **Note on the committed results.** `data/aid_sweep_results.pkl` and the figure above were produced by an earlier revision of the experiment section, running against an earlier version of the shapiq fork. The notebook has since been updated to the current API, and some implementation details changed with it. The experimental design is unchanged, and a rerun is expected to reproduce the same conclusion.
->
-> Move or rename `data/aid_sweep_results.pkl` before rerunning: the stored results and a new run use different image filenames, so a rerun writes additional entries into the same file rather than replacing them.
+
 ---
 
 ### `masking_faithfulness_benchmark.ipynb`
