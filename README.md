@@ -6,7 +6,7 @@ This repository compares three Shapley-value attribution methods for image class
 - **ProxySHAP**
 - **Captum KernelSHAP**
 
-The comparison is organized into three notebooks that progressively move from a single-image demonstration to robustness analysis and finally to a large-scale quantitative benchmark.
+The comparison is organized into four notebooks that progressively move from a single-image demonstration to robustness analysis and finally to large-scale quantitative benchmarks.
 
 ## Repository Overview
 
@@ -14,7 +14,8 @@ The comparison is organized into three notebooks that progressively move from a 
 |----------|---------|
 | `comparison_of_methods.ipynb` | Side-by-side comparison of all three methods on a single ImageNet image |
 | `shapiq_vision_noise_test.ipynb` | Analysis of attribution stability under increasing image noise |
-| `faithfulnessAID_benchmark.ipynb` | Large-scale benchmark using the insertion/deletion AID faithfulness metric |
+| `faithfulness_AID_benchmark.ipynb` | Large-scale benchmark using the insertion/deletion AID faithfulness metric |
+| `masking_faithfulness_benchmark.ipynb` | Which *masking strategy* yields the most faithful explanation, over 1000 images |
 
 ---
 
@@ -58,7 +59,7 @@ Although the focus is on Shapiq Vision, the experiment also illustrates how the 
 
 ---
 
-### `faithfulnessAID_benchmark.ipynb`
+### `faithfulness_AID_benchmark.ipynb`
 
 This notebook extends the comparison from a single example to a quantitative benchmark over approximately **200 ImageNet images**.
 
@@ -97,13 +98,39 @@ with all figures shown separately for ResNet-18 and ViT-B/16.
 
 ---
 
+### `masking_faithfulness_benchmark.ipynb`
+
+The other notebooks ask *which attribution method* is best. This one asks a different question: **which masking strategy** — that is, which definition of "this region is removed" — produces the most faithful explanation.
+
+Every explanation needs a removal rule, and `shapiq.vision` offers several. The notebook benchmarks six of them (`MeanColorMasking`, `ZeroMasking`, `DatasetMeanMasking`, `BlurMasking`, `MarginalSampling`, `InpaintingMasking`) plus ViT's token-space removal, over **1000 ImageNet images per run**, scoring each with insertion/deletion ABC. A random attribution order is included as a floor and lands at 0.00 ± 0.01, confirming the metric measures what it claims to.
+
+It runs three configurations:
+
+| Run | Model | Partition |
+|-----|-------|-----------|
+| `resnet50` | ResNet-50 | 25 SLIC superpixels |
+| `vit` | ViT-B/16 | 25 SLIC superpixels |
+| `vit_grid49` | ViT-B/16 | 49 uniform tiles |
+
+The third run exists to make one comparison honest. Token masking **cannot** use superpixels — `PatchStrategy` has to tile ViT's 14×14 token grid — so comparing it against superpixel-based strategies confounds the *removal rule* with the *partition*. Because `GridStrategy(grid_shape=7)` is geometrically identical to `PatchStrategy(grid_size=14, n_players=49)`, the `vit_grid49` run holds the partition fixed and lets the removal rule vary alone.
+
+![Masking faithfulness](data/plot_curves_vit_grid49.png)
+
+The headline result is that this distinction matters. Token masking appears to trail the best pixel strategy by **−0.163 ABC**, but a paired decomposition attributes **−0.100 to the partition** and only **−0.063 to the removal rule**: on an equal footing, token masking is mid-pack rather than last. Elsewhere, the cheap constant fills (`DatasetMeanMasking`, `MeanColorMasking`) top every run, while the expensive strategies do not pay for themselves — and `MarginalSampling` is strikingly partition-sensitive, competitive on superpixels but worst on a uniform grid.
+
+The notebook is self-contained, checkpoints every 25 images, and resumes automatically (`RESUME = True`); `PILOT = True` runs a small subset for a quick check. A full run takes roughly five hours on a GPU. Results are stored in `data/faithfulness_results.json` and `data/faithfulness_results.npz`, so every figure can be rebuilt without recomputing.
+
+---
+
 ## Installation
 
 Install the required packages with:
 
 ```bash
-pip install "git+https://github.com/S2k-1/shapiq.git@feature/protocols" captum scikit-image --quiet
+pip install "git+https://github.com/S2k-1/shapiq.git@feature/pr_final" captum scikit-image --quiet
 ```
+
+> `masking_faithfulness_benchmark.ipynb` requires the `feature/pr_final` branch, which renames the vision architectures (`CNNArchitecture` → `ClassificationArchitecture`, `TransformerArchitecture` → `ViTClassificationArchitecture`) and adds the masking strategies it benchmarks. The other notebooks still target the older `feature/protocols` API and need their imports updated to run against this branch.
 
 ---
 
@@ -111,4 +138,5 @@ pip install "git+https://github.com/S2k-1/shapiq.git@feature/protocols" captum s
 
 1. `comparison_of_methods.ipynb` - Learn the intuition behind each attribution method and compare them on a single image.
 2. `shapiq_vision_noise_test.ipynb` - Explore how Shapiq Vision explanations behave under increasing image noise.
-3. `faithfulnessAID_benchmark.ipynb` - Examine the large-scale quantitative comparison using the AID faithfulness metric.
+3. `faithfulness_AID_benchmark.ipynb` - Examine the large-scale quantitative comparison using the AID faithfulness metric.
+4. `masking_faithfulness_benchmark.ipynb` - Turn the question around and ask which masking strategy makes an explanation faithful in the first place.
