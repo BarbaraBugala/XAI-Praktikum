@@ -6,13 +6,14 @@ This repository compares three Shapley-value attribution methods for image class
 - **ProxySHAP**
 - **Captum KernelSHAP**
 
-The comparison is organized into four notebooks that progressively move from a single-image demonstration to robustness analysis and finally to large-scale quantitative benchmarks.
+The comparison is organized into five notebooks that progressively move from a single-image demonstration to robustness analysis and finally to large-scale quantitative benchmarks.
 
 ## Repository Overview
 
 | Notebook | Purpose |
 |----------|---------|
 | `comparison_of_methods.ipynb` | Side-by-side comparison of all three methods on a single ImageNet image |
+| `shapiq_vision_second_order.ipynb` | Second-order (pairwise) interaction values with Shapiq Vision, visualized as an upset plot |
 | `shapiq_vision_noise_test.ipynb` | Analysis of attribution stability under increasing image noise |
 | `faithfulness_AID_benchmark.ipynb` | Large-scale benchmark using the insertion/deletion AID faithfulness metric |
 | `masking_faithfulness_benchmark.ipynb` | Which *masking strategy* yields the most faithful explanation, over 1000 images |
@@ -39,6 +40,16 @@ The notebook includes:
 - a comparison of runtime and model-call budgets.
 
 ![Explanations](data/shap_comparison.png)
+
+---
+
+### `shapiq_vision_second_order.ipynb`
+
+The other notebooks only look at first-order Shapley values - one number per superpixel. This notebook asks Shapiq Vision for **second-order interactions** too: how much a *pair* of superpixels contributes jointly, beyond what their individual values would predict. Same model, image, and superpixel setup, just with `max_order=2` and the k-Shapley Interaction Index (`k-SII`) instead of ordinary first-order Shapley values.
+
+The result is visualized with an **upset plot**: the top bars show the strongest individual interactions (both single superpixels and pairs), and the matrix underneath shows which superpixel(s) each bar corresponds to. A numbered superpixel reference image is shown alongside the plot so the labels are traceable back to actual image regions, and the number of interactions displayed is configurable.
+
+![Second order](data/second_order.png)
 
 ---
 
@@ -130,13 +141,12 @@ Install the required packages with:
 pip install "git+https://github.com/S2k-1/shapiq.git@feature/pr_final" captum scikit-image --quiet
 ```
 
-> `masking_faithfulness_benchmark.ipynb` requires the `feature/pr_final` branch, which renames the vision architectures (`CNNArchitecture` → `ClassificationArchitecture`, `TransformerArchitecture` → `ViTClassificationArchitecture`) and adds the masking strategies it benchmarks. The other notebooks still target the older `feature/protocols` API and need their imports updated to run against this branch.
-
 ---
 
 ## Suggested Reading Order
 
 1. `comparison_of_methods.ipynb` - Learn the intuition behind each attribution method and compare them on a single image.
-2. `shapiq_vision_noise_test.ipynb` - Explore how Shapiq Vision explanations behave under increasing image noise.
-3. `faithfulness_AID_benchmark.ipynb` - Examine the large-scale quantitative comparison using the AID faithfulness metric.
-4. `masking_faithfulness_benchmark.ipynb` - Turn the question around and ask which masking strategy makes an explanation faithful in the first place.
+2. `shapiq_vision_second_order.ipynb` - See how Shapiq Vision's explanations extend to pairwise superpixel interactions.
+3. `shapiq_vision_noise_test.ipynb` - Explore how Shapiq Vision explanations behave under increasing image noise.
+4. `faithfulness_AID_benchmark.ipynb` - Examine the large-scale quantitative comparison using the AID faithfulness metric.
+5. `masking_faithfulness_benchmark.ipynb` - Turn the question around and ask which masking strategy makes an explanation faithful in the first place.
